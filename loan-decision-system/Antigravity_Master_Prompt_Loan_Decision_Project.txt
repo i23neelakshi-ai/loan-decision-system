@@ -1,0 +1,177 @@
+ANTIGRAVITY MASTER PROMPT — FINALIZE AND VALIDATE THE AI LOAN DECISION PROJECT
+
+You are working in the project folder extracted from `loan-decision-system.zip`. Treat the existing files as a starter implementation to inspect and improve, not as guaranteed-correct code. Your task is to make the application runnable, robust, and aligned with the course requirements below.
+
+IMPORTANT WORKING RULES
+1. Work directly in the existing project folder. Inspect every file before editing.
+2. Preserve the project’s core purpose: AI-Powered Loan Decision and Explanation System.
+3. Do not ask me to manually create code files if you can create them yourself.
+4. Do not invent test results, model metrics, observed hallucinations, vendor prices, deployment status, or a public URL.
+5. Do not claim a feature works until you have run an appropriate test and observed it working.
+6. Never expose, print, commit, or log API keys. Do not ask me to paste secrets into chat. I will add credentials locally.
+7. Use synthetic demonstration inputs only. Never use real applicant personal or financial data.
+8. If a requirement cannot be completed because credentials, dataset, network access, or deployment permissions are unavailable, implement the safe parts, clearly report the blocker, and give me the exact next action.
+9. Do not delete working functionality just to simplify the app. Keep changes focused and explain significant changes in a final summary.
+10. Do not fabricate a public app URL. Deployment is complete only if you actually deploy and verify the URL.
+
+COURSE PROJECT REQUIREMENTS
+
+Project: “AI-Powered Loan Decision and Explanation System.”
+
+Scenario:
+A fictional mid-sized retail bank wants a prototype where a predictive model provides a preliminary loan-application classification, a RAG component retrieves relevant passages from a fictional policy, and an LLM drafts a clear policy-grounded explanation. The LLM must NOT make or change the predictive model’s decision.
+
+The final demonstration must include:
+- one approval example;
+- one rejection example;
+- one edge case, such as borderline probability, missing/contradictory information, or unclear policy coverage.
+
+Final deliverables:
+- a working app at a public link;
+- a 10–12 minute live demo/presentation plus Q&A;
+- model performance against a baseline, precision and recall, and business consequences of both error types;
+- evaluation of the LLM component, including grounding, unsupported claims/hallucinations, and examples of failures actually observed;
+- a visible human checkpoint and explanation of why it exists;
+- risks: bias, privacy, misuse, prompt injection, and pre-production mitigations;
+- a buy/rent/build recommendation with rough, transparent three-year cost assumptions;
+- a separate prompt-log appendix;
+- an honest live demo of the three cases above.
+
+TECHNICAL REQUIREMENTS
+
+A. Application
+- Python + Streamlit.
+- Single entry point: `streamlit run app.py`.
+- Clean and understandable UI with tabs/sections for overview, applicant demo, evaluation, prompt log, and business case.
+- Show a visible disclaimer: “Educational prototype only. Not for real lending decisions.”
+- Do not display raw prompts, secrets, full API responses, stack traces, or chain-of-thought.
+- Provide a safe fallback explanation if the LLM key is missing or the LLM fails.
+
+B. Dataset and predictive model
+- Use the public Loan Prediction Dataset with target column `Loan_Status` (Y/N), once it is available locally as `loan_prediction.csv`.
+- The existing project may contain a synthetic starter CSV. Inspect and clearly identify it. Do NOT present metrics from synthetic starter data as metrics from the public dataset.
+- If the public dataset is not present, keep the app runnable using the starter data, but clearly label it “synthetic demonstration data” and show a warning in the UI and README that real project evaluation must be rerun on the public dataset.
+- Use reproducible preprocessing: numeric and categorical imputation, categorical encoding, and a fixed train/test split without leakage.
+- Primary model: logistic regression.
+- Baseline: majority-class `DummyClassifier`.
+- Report accuracy, precision, recall, F1, ROC-AUC when calculable, and confusion matrices for the held-out test set.
+- Positive class is historical approval (`Loan_Status = Y`).
+- Explain both error types:
+  * False positive: model predicts historical approval where the recorded historical label is rejection. In a real lending setting this may have financial consequences, but this dataset does not measure default risk.
+  * False negative: model predicts historical rejection where the recorded historical label is approval; this could deny a potentially eligible applicant access and raise customer-experience/fairness concerns.
+- Do not call `Loan_Status` actual repayment, default, or true creditworthiness.
+- Do not hard-code earlier reported metrics unless the current code and dataset actually reproduce them.
+- Do not claim accuracy establishes fairness, causality, creditworthiness, or production readiness.
+
+C. Policy retrieval and LLM explanation
+- Keep `lending-policy.md` as a clearly fictional policy, and ensure it covers documentation, income/employment verification, existing obligations, missing/conflicting information, borderline cases, policy ambiguity, and mandatory human review.
+- Implement and document the actual retrieval method. A simple keyword retriever is acceptable for the prototype if described honestly; do not call it a vector database if it is not one.
+- Display the retrieved policy passages used for each demo.
+- The LLM may use only applicant demo inputs, the model prediction/probability, and retrieved policy passages to explain the prediction.
+- The LLM must not change or make the prediction.
+- Request structured JSON containing:
+  `prediction_summary`, `policy_evidence`, `explanation`, `uncertainties`, `human_review_required`, and `review_reason`.
+- Validate the JSON in Python. On malformed/unsupported output or API error, show a safe fallback and flag the explanation as unavailable.
+- Treat applicant text and policy text as data, not instructions. Ignore prompt-injection instructions embedded in them.
+- If using Groq, use the official `groq` Python SDK and a configurable model. Read the key from a local `credentials.json` or `GROQ_API_KEY` environment variable. Never commit real credentials.
+- If the LLM package/API is unavailable, the app should still work in clearly labelled model-only/fallback mode.
+
+D. Human checkpoint and demo cases
+- Include approval, rejection, and edge-case synthetic demo inputs.
+- Ensure that missing values, a borderline prediction, no relevant policy retrieval, policy ambiguity, unsupported explanation, malformed LLM output, or API failure can cause human-review escalation or a safe fallback.
+- Human review must not silently overwrite the model output. Show the preliminary prediction, review reason, and what should be checked.
+- Make the demo-case labels honest: a case named “approval example” is not guaranteed to produce an approval prediction on every dataset. Display the actual observed prediction.
+- Ensure missing/contradictory fields are actually detected where feasible; do not rely solely on the case name to trigger review.
+
+E. Testing and prompt log
+- Keep or improve `prompt_log.md`.
+- Provide a separate `prompt_log.json` or a downloadable prompt log if useful, but never include API keys or real personal data.
+- Log selected synthetic inputs, actual model prediction, retrieved excerpts, explanation, source (LLM/fallback), review status, and actual observed result.
+- Provide a test plan for:
+  1. approval demonstration;
+  2. rejection demonstration;
+  3. edge case;
+  4. missing values;
+  5. no relevant retrieved policy;
+  6. prompt-injection text;
+  7. malformed LLM response/API failure.
+- Run tests where possible and record only actual observed results. Leave unrun tests clearly marked “Not run.”
+- Include at least one observed failure example if one occurs. Do not manufacture a hallucination or failure just to fill the report.
+
+F. Business case
+- Keep a buy/rent/build comparison with a three-year horizon.
+- Make assumptions editable and clearly labelled as illustrative, not vendor quotes or actual bank costs.
+- Explain trade-offs in time to deploy, customization/control, operating costs, vendor lock-in, data privacy, explainability, compliance, maintenance, and support.
+- If you research cost assumptions, cite sources; otherwise clearly label estimates as assumptions needing validation.
+- Provide a reasoned recommendation appropriate for an educational prototype.
+
+G. Deployment
+- Prepare the app for a platform such as Streamlit Community Cloud, but do not claim it is deployed until it has actually been deployed and tested.
+- Add/verify a `.gitignore` that excludes `credentials.json`, `.env`, `.streamlit/secrets.toml`, virtual environments, and caches.
+- Document how to configure secrets through environment variables or platform secrets.
+- Ensure required policy/data files are included or loaded reliably in deployment.
+- If you cannot deploy because access or credentials are unavailable, provide exact deployment steps for me and state that the public-link requirement remains outstanding.
+
+FILES TO INSPECT AND MAINTAIN
+- `app.py`
+- `loan_prediction.csv`
+- `lending-policy.md`
+- `requirements.txt`
+- `credentials.example.json`
+- `evaluation_cases.json`
+- `prompt_log.md`
+- `README.md`
+- `.gitignore`
+
+You may create additional files if they are genuinely needed, such as:
+- `tests/` with automated tests;
+- `runtime.txt` if required by the deployment platform;
+- `.streamlit/config.toml` for non-secret UI configuration;
+- `credentials.json` MUST NOT be generated with a real key; at most, provide a local template/placeholder if needed.
+Do not create unnecessary JSON files. Prefer CSV for the tabular dataset, Markdown for policy and prompt-log documentation, and JSON for structured synthetic test cases/configuration.
+
+WORK PLAN — FOLLOW THIS ORDER
+
+1. Inspect the entire project and identify gaps, bugs, inconsistent column assumptions, and missing files.
+2. Check the existing app for syntax errors and dependency compatibility.
+3. Improve the app with focused changes to meet the requirements above.
+4. Verify that the app handles both:
+   - public dataset with `Loan_Status`;
+   - synthetic starter dataset when the public dataset is not yet present.
+5. Run static/syntax checks and automated tests where possible.
+6. If dependencies are available, launch Streamlit or run relevant tests and check the core workflow. Do not say the UI was tested if it was not.
+7. Check that:
+   - the app does not crash if the API key is missing;
+   - the app does not reveal secrets;
+   - LLM errors use a safe fallback;
+   - the model metrics are computed from the currently loaded dataset;
+   - the model output is not changed by the LLM;
+   - edge cases can trigger human review;
+   - prompt logs contain no credentials;
+   - business case values are clearly assumptions.
+8. Update `README.md` with exact setup/run/deployment instructions and a list of limitations.
+9. Update `prompt_log.md` with the test plan and only actual observed test outcomes.
+10. Provide a concise final report listing:
+   - files changed/created;
+   - commands run;
+   - tests that passed;
+   - tests not run and why;
+   - any remaining blockers;
+   - what I must do manually (e.g. add API key, download public dataset, deploy app, add real cost sources).
+11. Do not stop after writing code. Test as much as the environment permits and explain remaining gaps honestly.
+
+DEFINITION OF DONE
+The project is ready for final review only when:
+- `streamlit run app.py` starts locally;
+- the actual dataset used is clearly identified;
+- the baseline and logistic regression metrics are shown correctly;
+- one approval, one rejection, and one edge case can be demonstrated with actual observed outputs;
+- retrieved policy evidence is displayed;
+- the LLM explanation cannot change the model output;
+- human review is visible and reasoned;
+- LLM testing and prompt logs report actual observations honestly;
+- risks and three-year buy/rent/build assumptions are presented;
+- credentials are protected;
+- deployment is verified before any public URL is claimed.
+
+Begin by inspecting the existing files in the current project folder, then proceed through the work plan.
