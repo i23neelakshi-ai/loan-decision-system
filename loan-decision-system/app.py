@@ -38,7 +38,7 @@ STOPWORDS = {
 }
 
 st.set_page_config(
-    page_title="AI Loan Decision & Explanation System",
+    page_title="LoanLens: AI Loan Decision & Explanation System",
     page_icon="🏦",
     layout="wide"
 )
@@ -83,7 +83,7 @@ div[data-testid="stMetric"] {background: #f8fafc; border: 1px solid #e2e8f0; pad
 </style>
 """, unsafe_allow_html=True)
 
-st.title("🏦 AI-Powered Loan Decision and Explanation System")
+st.title("🏦 LoanLens: An AI-Powered Loan Decision and Explanation System")
 st.caption("Classroom Educational Prototype • Mid-Sized Retail Bank Scenario")
 
 st.markdown("""
@@ -890,6 +890,6 @@ For a mid-sized retail bank transitioning from educational prototype to producti
 
 st.markdown("---")
 st.caption(
-    "AI-Powered Loan Decision and Explanation System • Educational Prototype • "
+    "LoanLens: An AI-Powered Loan Decision and Explanation System • Educational Prototype • "
     "Predictive outputs represent historical approval labels, not repayment performance or creditworthiness."
 )
